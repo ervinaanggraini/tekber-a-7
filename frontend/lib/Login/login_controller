@@ -1,0 +1,95 @@
+// file: lib/modules/auth/login_controller.dart
+
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:moneyvesto/core/utils/route_utils.dart';
+import 'package:moneyvesto/data/auth_datasource.dart';
+
+class LoginController extends GetxController {
+  final AuthDataSource _authDataSource = AuthDataSourceImpl();
+
+  final usernameController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  final isLoading = false.obs;
+
+  Future<void> login() async {
+    if (usernameController.text.isEmpty || passwordController.text.isEmpty) {
+      Get.snackbar(
+        'Gagal',
+        'Username dan Password tidak boleh kosong.',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red.withOpacity(0.8),
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    try {
+      isLoading.value = true;
+      final response = await _authDataSource.login(
+        usernameController.text.trim(),
+        passwordController.text.trim(),
+      );
+
+      print('Response: ${response.data}');
+
+      if (response.statusCode == 200) {
+        Get.snackbar(
+          'Sukses', 'Login berhasil!' /* ... */,
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.green.withOpacity(0.8),
+          colorText: Colors.white);
+        Get.offAllNamed(NavigationRoutes.home);
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Login Gagal',
+        'Terjadi kesalahan. Periksa kembali username dan password Anda.' + usernameController.text.trim() + ' ' + passwordController.text.trim() + ' ' + e.toString(),
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red.withOpacity(0.8),
+        colorText: Colors.white,
+      );
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> logout() async {
+    try {
+      Get.defaultDialog(
+        title: "Konfirmasi Logout",
+        middleText: "Apakah Anda yakin ingin keluar?",
+        textConfirm: "Ya, Keluar",
+        textCancel: "Batal",
+        onConfirm: () async {
+          // Tutup dialog
+          Get.back();
+
+          // Tampilkan loading overlay
+          Get.dialog(
+            const Center(child: CircularProgressIndicator()),
+            barrierDismissible: false,
+          );
+
+          await _authDataSource.logout();
+
+          // Tutup loading overlay
+          Get.back();
+
+          Get.offAllNamed(NavigationRoutes.login);
+          Get.snackbar('Berhasil', 'Anda telah berhasil logout.');
+        },
+      );
+    } catch (e) {
+      Get.offAllNamed(NavigationRoutes.login);
+    }
+  }
+
+  @override
+  void onClose() {
+    usernameController.dispose();
+    passwordController.dispose();
+    super.onClose();
+  }
+}
