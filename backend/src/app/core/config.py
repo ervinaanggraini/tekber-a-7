@@ -134,6 +134,15 @@ class CORSSettings(BaseSettings):
     CORS_HEADERS: list[str] = ["*"]
 
 
+class OpenRouterSettings(BaseSettings):
+    OPENROUTER_API_KEY: str = ""
+    OPENROUTER_SITE_URL: str | None = None
+    OPENROUTER_DEFAULT_MODEL: str = "anthropic/claude-3.5-sonnet"
+    OPENROUTER_MAX_TOKENS: int = 4096
+    OPENROUTER_TEMPERATURE: float = 0.7
+    OPENROUTER_TOP_P: float = 0.9
+
+
 class Settings(
     AppSettings,
     SQLiteSettings,
@@ -147,6 +156,7 @@ class Settings(
     CRUDAdminSettings,
     EnvironmentSettings,
     CORSSettings,
+    OpenRouterSettings,
 ):
     model_config = SettingsConfigDict(
         env_file=os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "..", ".env"),
