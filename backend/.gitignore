@@ -448,6 +448,12 @@ alembic.ini.bak
 local_config.py
 local_settings.py
 
+# Corrupted files (filesystem errors - cannot be removed)
+src/app/api/v1/chat.py
+src/app/crud/crud_chat.py
+src/app/models/chat.py
+src/app/schemas/chat.py
+
 # Development utilities
 dev_utils/
 scripts/dev/
