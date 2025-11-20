@@ -43,7 +43,7 @@ async def create_first_user(session: AsyncSession) -> None:
                 Column("deleted_at", DateTime),
                 Column("is_deleted", Boolean, default=False, index=True),
                 Column("is_superuser", Boolean, default=False),
-                Column("tier_id", Integer, ForeignKey("tier.id"), index=True),
+
             )
 
             data = {
